@@ -1,0 +1,63 @@
+--lua端的回调函数实现
+
+function start()
+	print("lua start...")
+	manager = CS.IventorySystem.MouseManager.GetManager()
+	manager.OnDragBeginEvent:AddListener(BeginDragAction)
+	manager.OnDropEvent:AddListener(DropAction)
+    manager.OnDiscardEvent:AddListener(DiscardAction)
+end
+
+function update()
+	if(manager.InBag)
+	then
+		print("in")
+	else
+		print("not in")
+	end
+end
+
+function fixedupdate()
+
+end
+
+function ondestroy()
+    print("lua destroy")
+end
+
+function BeginDragAction(itm)					--开始拖拽回调函数
+	if(true)					--一些判断条件，物品是否能拖动
+	then
+		itm:FloatUp()
+	end
+end
+
+function DiscardAction(itm)						--丢弃回调函数
+	if(true)					--一些判断条件，物品是否能丢弃或销毁
+	then
+		itm:destroyItem()
+	else
+		itm:returnBack()
+	end
+end
+
+function DropAction(itm,slot)					--放置到新槽位回调函数
+	if (true)					--一些判断条件，物品是否能够放入这个槽位
+    then
+		if (slot.owningItem ~= nil)
+        then
+			if (true)			--一些判断条件,两个槽位内的物品是否能交换
+            then
+				slot.owningItem:flyTo(itm.slot)
+                itm:flyTo(slot)
+            else
+                itm:returnBack()
+            end
+        else
+			itm:flyTo(slot)
+        end
+
+    else
+		itm:returnBack()
+	end
+end

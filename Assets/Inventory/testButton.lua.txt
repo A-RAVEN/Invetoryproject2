@@ -1,0 +1,32 @@
+
+function start()
+	self:GetComponent("Button").onClick:AddListener(test)
+end
+
+function update()
+
+end
+
+function fixedupdate()
+
+end
+
+function test()
+	print("print")
+end
+
+function ondestroy()
+    print("lua destroy")
+end
+
+function BeginDragAction(itm)
+	itm:FloatUp()
+end
+
+function DiscardAction(itm)
+	itm:returnBack()
+end
+
+function DropAction(itm,slt)
+	itm:returnBack()
+end
