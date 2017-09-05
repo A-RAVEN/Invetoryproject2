@@ -8,14 +8,16 @@ using UnityEngine.EventSystems;
 namespace IventorySystem
 {
     [LuaCallCSharp]
-    public class Item : MonoBehaviour,IBeginDragHandler,IPointerUpHandler
+    public class Item : MonoBehaviour,IBeginDragHandler,IPointerUpHandler,IDragHandler
     {
         public Slot slot = null;
+        public Slot currentOverSlot = null;
+        public bool inBag = false;
         private bool floating = false;
         private bool homing = false;
         private bool destroyed = false;
         private RectTransform rcTransform;
-        private MouseManager manager = null;
+        //private MouseManager manager = null;
         private CanvasGroup canvasGroup;
         private Transform backGround;
 
@@ -24,32 +26,36 @@ namespace IventorySystem
         {
             rcTransform = GetComponent<RectTransform>();
             canvasGroup = GetComponent<CanvasGroup>();
-            manager = FindObjectOfType<MouseManager>();
-            backGround = FindObjectOfType<Canvas>().gameObject.GetComponent<RectTransform>();
+            //manager = FindObjectOfType<MouseManager>();
+
             slot = gameObject.GetComponentInParent<Slot>();
+            currentOverSlot = slot;
+            if (GetComponentInParent<Bag>() != null)
+                inBag = true;
+
         }
 
         // Update is called once per frame
         void Update()
         {
-            if (!destroyed)
-            {
-                if (!homing && floating)
-                {
-                    Vector3 FinalPos = Input.mousePosition;
-                    FinalPos.x -= Screen.width / 2;
-                    FinalPos.y -= Screen.height / 2;
-                    rcTransform.localPosition = FinalPos;
-                }
-                if (homing)
-                {
-                    LayDown(slot);
-                }
-            }
-            else
-            {
-                UpdateDestroyItem();
-            }
+            //if (!destroyed)
+            //{
+            //    //if (!homing && floating)
+            //    //{
+            //    //    Vector3 FinalPos = Input.mousePosition;
+            //    //    FinalPos.x -= Screen.width / 2;
+            //    //    FinalPos.y -= Screen.height / 2;
+            //    //    rcTransform.localPosition = FinalPos;
+            //    //}
+            //    if (homing)
+            //    {
+            //        LayDown(slot);
+            //    }
+            //}
+            //else
+            //{
+            //    UpdateDestroyItem();
+            //}
         }
 
         //前往新的槽位
@@ -58,6 +64,7 @@ namespace IventorySystem
             FloatUp();
             slot = newslot;
             homing = true;
+            LayDown(slot);
         }
         //返回原先的槽位
         public void returnBack()
@@ -65,12 +72,14 @@ namespace IventorySystem
             if(floating&&!homing)
             {
                 homing = true;
+                LayDown(slot);
             }
         }
         //销毁该图标
         public void destroyItem()
         {
             destroyed = true;
+            UpdateDestroyItem();
         }
 
         //物品进入可移动的漂浮状态
@@ -78,7 +87,7 @@ namespace IventorySystem
         {
             if (!floating)
             {
-                //Transform parentTransforn = FindObjectOfType<Canvas>().gameObject.GetComponent<RectTransform>();
+                backGround = GetComponentInParent<Canvas>().gameObject.GetComponent<RectTransform>();
                 transform.SetParent(backGround);
                 slot.owningItem = null;
                 canvasGroup.blocksRaycasts = false;
@@ -95,10 +104,17 @@ namespace IventorySystem
                 transform.localPosition = new Vector3(0.0f, 0.0f, 0.0f);
                 newslot.owningItem = this;
                 slot = newslot;
+                currentOverSlot = newslot;
                 canvasGroup.blocksRaycasts = true;
+                inBag = true;
                 floating = false;
                 homing = false;
             }
+        }
+
+        public bool bFloating()
+        {
+            return floating; 
         }
 
         private void UpdateDestroyItem()
@@ -106,42 +122,50 @@ namespace IventorySystem
             GameObject.Destroy(this.gameObject);
         }
 
-        private MouseManager getMouseManager()
-        {
-            return manager;
-        }
-
         public void OnBeginDrag(PointerEventData eventData)
         {
-            manager.OnItemDragBegin(this);//开始拖拽时通知MouseManager
+            MouseManager.managerInstance.OnItemDragBegin(this);//开始拖拽时通知MouseManager
         }
 
         public void OnPointerUp(PointerEventData eventData)
         {
             if (floating)
             {
-                if (getMouseManager().InBag)
+                if (inBag)
                 {
-                    if (getMouseManager().CurrentSlot == null)
+                    if (currentOverSlot == null)
                     {
                         homing = true;
+                        LayDown(slot);
                     }
                     else
                     {
-                        if (getMouseManager().CurrentSlot != slot)
+                        if (currentOverSlot != slot)
                         {
-                            manager.OnItemDrop(this, manager.CurrentSlot);//放入新槽位时通知MouseManager
+                            MouseManager.managerInstance.OnItemDrop(this, currentOverSlot);//放入新槽位时通知MouseManager
                         }
                         else
                         {
                             homing = true;
+                            LayDown(slot);
                         }
                     }
                 }
                 else
                 {
-                    manager.OnItemDiscard(this);//丢弃时通知MouseManager
+                    MouseManager.managerInstance.OnItemDiscard(this);//丢弃时通知MouseManager
                 }
+            }
+        }
+
+        public void OnDrag(PointerEventData eventData)
+        {
+            if (!homing && floating)
+            {
+                Vector3 FinalPos = Input.mousePosition;
+                FinalPos.x -= Screen.width / 2;
+                FinalPos.y -= Screen.height / 2;
+                rcTransform.localPosition = FinalPos;
             }
         }
     }

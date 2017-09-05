@@ -19,9 +19,17 @@ namespace IventorySystem
         public ItemEvent OnDiscardEvent = new ItemEvent();                  //丢弃
         public DropEvent OnDropEvent = new DropEvent();                     //放置到新槽位
 
-        public Item DraggingItem = null;
-        public Slot CurrentSlot = null;
-        public bool InBag = false;
+        public static MouseManager managerInstance = null;
+
+        //public Item DraggingItem = null;
+        //public Slot CurrentSlot = null;
+        //public bool InBag = false;
+
+        private void Awake()
+        {
+            managerInstance = this;
+            enabled = false;
+        }
 
         // Use this for initialization
         void Start()

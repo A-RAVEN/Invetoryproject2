@@ -10,13 +10,13 @@ namespace IventorySystem
     public class Slot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
         public Item owningItem = null;
-        private MouseManager manager = null;
+        //private MouseManager manager = null;
 
         // Use this for initialization
         void Start()
         {
             owningItem = GetComponentInChildren<Item>();
-            manager = FindObjectOfType<MouseManager>();
+            //manager = FindObjectOfType<MouseManager>();
         }
 
         // Update is called once per frame
@@ -25,12 +25,32 @@ namespace IventorySystem
 
         public void OnPointerEnter(PointerEventData eventData)
         {
-            manager.CurrentSlot = this;
+            //
+            if (eventData.pointerDrag == null)
+                return;
+
+            Item itm = eventData.pointerDrag.GetComponent<Item>();
+            if(itm != null&&itm.bFloating())
+            {
+                itm.currentOverSlot = this;
+            }
+            //
+            //manager.CurrentSlot = this;
         }
 
         public void OnPointerExit(PointerEventData eventData)
         {
-            manager.CurrentSlot = null;
+            //
+            if (eventData.pointerDrag == null)
+                return;
+
+            Item itm = eventData.pointerDrag.GetComponent<Item>();
+            if (itm != null && itm.bFloating())
+            {
+                itm.currentOverSlot = null;
+            }
+            //
+            //manager.CurrentSlot = null;
         }
     }
 }

@@ -9,12 +9,9 @@ namespace IventorySystem
     [LuaCallCSharp]
     public class Bag : MonoBehaviour,IPointerEnterHandler,IPointerExitHandler
     {
-        private MouseManager manager = null;
-
         // Use this for initialization
         void Start()
         {
-            manager = FindObjectOfType<MouseManager>();
         }
 
         // Update is called once per frame
@@ -23,12 +20,31 @@ namespace IventorySystem
 
         public void OnPointerEnter(PointerEventData eventData)
         {
-            manager.InBag = true;
+            if (eventData.pointerDrag == null)
+                return;
+
+            Item itm = eventData.pointerDrag.GetComponent<Item>();
+            if (itm != null && itm.bFloating())
+            {
+                itm.inBag = true;
+            }
         }
 
         public void OnPointerExit(PointerEventData eventData)
         {
-            manager.InBag = false;
+            if (eventData.pointerDrag == null)
+                return;
+
+            Item itm = eventData.pointerDrag.GetComponent<Item>();
+            if (itm != null && itm.bFloating())
+            {
+                itm.inBag = false;
+            }
+        }
+
+        public bool addNewItem(Item itm)
+        {
+            return false;
         }
     }
 }

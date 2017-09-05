@@ -102,7 +102,6 @@ public class BasicMono : MonoBehaviour
 {
     public TextAsset luaScript;
     public Injection[] injections;
-    //public Text txt;
     internal static float lastGCTime = 0;
     internal const float GCInterval = 1;//1 second 
     private XLua.LuaEnv luaEnv;
@@ -174,7 +173,6 @@ public class BasicMono : MonoBehaviour
         }
         if (Time.time - BasicMono.lastGCTime > GCInterval)
         {
-
             BasicMono.lastGCTime = Time.time;
         }
     }

@@ -51,8 +51,8 @@ public static class ExampleGenConfig
     [CSharpCallLua]
     public static List<Type> CSharpCallLua = new List<Type>() {
                 typeof(Action),
-                typeof(UnityEngine.Events.UnityAction<IventorySystem.Item>),
-                typeof(UnityEngine.Events.UnityAction<IventorySystem.Item,IventorySystem.Slot>),
+                typeof(UnityEngine.Events.UnityAction<IventorySystem.Item>),                        //加入此配置
+                typeof(UnityEngine.Events.UnityAction<IventorySystem.Item,IventorySystem.Slot>),    //加入此配置
                 typeof(Func<double, double, double>),
                 typeof(Action<string>),
                 typeof(Action<double>),
