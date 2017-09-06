@@ -10,12 +10,29 @@ namespace IventorySystem
     public class Slot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
         public Item owningItem = null;
+        public Bag bag = null;
         //private MouseManager manager = null;
 
         // Use this for initialization
         void Start()
         {
             owningItem = GetComponentInChildren<Item>();
+            bag = GetComponentInParent<Bag>();
+            if(bag == null)
+            {
+                bag = GetComponent<Bag>();
+            }
+            if(bag != null)
+            {
+                if(owningItem != null)
+                {
+                    bag.getOccupiedSlots().Add(this);
+                }
+                else
+                {
+                    bag.getAvailableSlots().Add(this);
+                }
+            }
             //manager = FindObjectOfType<MouseManager>();
         }
 

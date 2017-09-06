@@ -21,11 +21,16 @@ namespace IventorySystem
         private CanvasGroup canvasGroup;
         private Transform backGround;
 
-        // Use this for initialization
-        void Start()
+        private void Awake()
         {
             rcTransform = GetComponent<RectTransform>();
             canvasGroup = GetComponent<CanvasGroup>();
+        }
+
+        // Use this for initialization
+        void Start()
+        {
+
             //manager = FindObjectOfType<MouseManager>();
 
             slot = gameObject.GetComponentInParent<Slot>();
@@ -87,9 +92,19 @@ namespace IventorySystem
         {
             if (!floating)
             {
-                backGround = GetComponentInParent<Canvas>().gameObject.GetComponent<RectTransform>();
-                transform.SetParent(backGround);
-                slot.owningItem = null;
+                Canvas back = GetComponentInParent<Canvas>();
+                if(back != null)
+                {
+                    backGround = back.gameObject.GetComponent<RectTransform>();
+                    transform.SetParent(backGround);
+                }
+
+                if(slot != null)
+                {
+                    slot.owningItem = null;
+                    slot.bag.getOccupiedSlots().Remove(slot);
+                    slot.bag.getAvailableSlots().Add(slot);
+                }
                 canvasGroup.blocksRaycasts = false;
                 floating = true;
             }
@@ -102,8 +117,13 @@ namespace IventorySystem
                 Transform parentTransforn = newslot.gameObject.transform;
                 transform.SetParent(parentTransforn);
                 transform.localPosition = new Vector3(0.0f, 0.0f, 0.0f);
+                rcTransform.offsetMin = new Vector2(0.0f, 0.0f);
+                rcTransform.offsetMax = new Vector2(0.0f, 0.0f);
+                rcTransform.localScale = new Vector3(1.0f, 1.0f, 1.0f);
                 newslot.owningItem = this;
                 slot = newslot;
+                slot.bag.getAvailableSlots().Remove(slot);
+                slot.bag.getOccupiedSlots().Add(slot);
                 currentOverSlot = newslot;
                 canvasGroup.blocksRaycasts = true;
                 inBag = true;
@@ -119,12 +139,16 @@ namespace IventorySystem
 
         private void UpdateDestroyItem()
         {
+            if (!floating && slot != null)
+            {
+                slot.owningItem = null;
+            }
             GameObject.Destroy(this.gameObject);
         }
 
         public void OnBeginDrag(PointerEventData eventData)
         {
-            MouseManager.managerInstance.OnItemDragBegin(this);//开始拖拽时通知MouseManager
+            MouseManager.managerInstance.OnDragBeginEvent.Invoke(this);//开始拖拽时通知MouseManager
         }
 
         public void OnPointerUp(PointerEventData eventData)
@@ -142,7 +166,7 @@ namespace IventorySystem
                     {
                         if (currentOverSlot != slot)
                         {
-                            MouseManager.managerInstance.OnItemDrop(this, currentOverSlot);//放入新槽位时通知MouseManager
+                            MouseManager.managerInstance.OnDropEvent.Invoke(this, currentOverSlot);//放入新槽位时通知MouseManager
                         }
                         else
                         {
@@ -153,7 +177,7 @@ namespace IventorySystem
                 }
                 else
                 {
-                    MouseManager.managerInstance.OnItemDiscard(this);//丢弃时通知MouseManager
+                    MouseManager.managerInstance.OnDiscardEvent.Invoke(this);//丢弃时通知MouseManager
                 }
             }
         }

@@ -44,7 +44,8 @@ public static class ExampleGenConfig
                 typeof(WWW),
                 typeof(System.Collections.Generic.List<int>),
                 typeof(Action<string>),
-                typeof(UnityEngine.Debug)
+                typeof(UnityEngine.Debug),
+                typeof(List<IventorySystem.Slot>)                                                   //加入此配置
             };
 
     //C#静态调用Lua的配置（包括事件的原型），仅可以配delegate，interface
@@ -53,6 +54,7 @@ public static class ExampleGenConfig
                 typeof(Action),
                 typeof(UnityEngine.Events.UnityAction<IventorySystem.Item>),                        //加入此配置
                 typeof(UnityEngine.Events.UnityAction<IventorySystem.Item,IventorySystem.Slot>),    //加入此配置
+                typeof(UnityEngine.Events.UnityAction<IventorySystem.Bag,IventorySystem.Item>),    //加入此配置
                 typeof(Func<double, double, double>),
                 typeof(Action<string>),
                 typeof(Action<double>),

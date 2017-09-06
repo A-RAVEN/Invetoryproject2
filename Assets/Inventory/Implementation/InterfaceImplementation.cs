@@ -7,7 +7,7 @@ using IventorySystem;
 //C#的接口实现
 public class InterfaceImplementation : MonoBehaviour
 {
-    MouseManager manager = null;
+    //MouseManager manager = null;
 
     public UnityAction<Item> BeginDragAction;
     public UnityAction<Item, Slot> DropAction;
@@ -19,13 +19,12 @@ public class InterfaceImplementation : MonoBehaviour
         BeginDragAction = new UnityAction<Item>(OnItemDragFunc);
         DiscardAction = new UnityAction<Item>(OnItemDiscardFunction);
         DropAction = new UnityAction<Item, Slot>(OnItemDropFunction);
-        manager = MouseManager.GetManager();
-        if (manager != null)
-        {
-            manager.OnDragBeginEvent.AddListener(BeginDragAction);
-            manager.OnDropEvent.AddListener(DropAction);
-            manager.OnDiscardEvent.AddListener(DiscardAction);
-        }
+        //manager = MouseManager.GetManager();
+
+        MouseManager.managerInstance.OnDragBeginEvent.AddListener(BeginDragAction);
+        MouseManager.managerInstance.OnDropEvent.AddListener(DropAction);
+        MouseManager.managerInstance.OnDiscardEvent.AddListener(DiscardAction);
+        MouseManager.managerInstance.OnBagAddItemEvent.AddListener(OnBagAddItem);
     }
 
     // Update is called once per frame
@@ -76,6 +75,19 @@ public class InterfaceImplementation : MonoBehaviour
         else
         {
             itm.returnBack();
+        }
+    }
+
+    public void OnBagAddItem(Bag bag,Item itm)
+    {
+        List<Slot> availables = bag.getAvailableSlots();
+        if(availables.Count> 0)
+        {
+            itm.flyTo(availables[0]);
+        }
+        else
+        {
+            itm.destroyItem();
         }
     }
 

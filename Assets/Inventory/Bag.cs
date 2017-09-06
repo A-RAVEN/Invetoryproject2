@@ -7,11 +7,15 @@ using UnityEngine.EventSystems;
 namespace IventorySystem
 {
     [LuaCallCSharp]
-    public class Bag : MonoBehaviour,IPointerEnterHandler,IPointerExitHandler
+    public class Bag : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
+        private List<Slot> availableSlots = new List<Slot>();
+        private List<Slot> occupiedSlots = new List<Slot>();
+        GameObject pref = null;
         // Use this for initialization
         void Start()
         {
+            pref = (GameObject)Resources.Load("Item");
         }
 
         // Update is called once per frame
@@ -42,9 +46,33 @@ namespace IventorySystem
             }
         }
 
-        public bool addNewItem(Item itm)
+        public Slot[] getSlots()
         {
-            return false;
+            ArrayList list = new ArrayList();
+            return GetComponentsInChildren<Slot>();
+
+        }
+
+        public List<Slot> getAvailableSlots()
+        {
+            return availableSlots;
+        }
+
+        public List<Slot> getOccupiedSlots()
+        {
+            return occupiedSlots;
+        }
+
+        public void addNewItem(Item itm)
+        {
+            MouseManager.managerInstance.OnBagAddItemEvent.Invoke(this, itm);
+        }
+
+        public void TestButtonAddItem()
+        {
+            
+            GameObject obj = GameObject.Instantiate(pref);
+            addNewItem(obj.GetComponent<Item>());
         }
     }
 }

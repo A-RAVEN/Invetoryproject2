@@ -15,9 +15,13 @@ namespace IventorySystem
         [LuaCallCSharp]
         public class ItemEvent : UnityEvent<Item> { }
 
+        [LuaCallCSharp]
+        public class AddItemEvent : UnityEvent<Bag, Item> { }
+
         public ItemEvent OnDragBeginEvent = new ItemEvent();                //开始拖拽
         public ItemEvent OnDiscardEvent = new ItemEvent();                  //丢弃
         public DropEvent OnDropEvent = new DropEvent();                     //放置到新槽位
+        public AddItemEvent OnBagAddItemEvent = new AddItemEvent();         //添加新物品
 
         public static MouseManager managerInstance = null;
 
@@ -39,24 +43,24 @@ namespace IventorySystem
         void Update()
         { }
 
-        public void OnItemDragBegin(Item itm)
-        {
-            OnDragBeginEvent.Invoke(itm);                                   //开始拖拽
-        }
+        //public void OnItemDragBegin(Item itm)
+        //{
+        //    OnDragBeginEvent.Invoke(itm);                                   //开始拖拽
+        //}
 
-        public void OnItemDiscard(Item itm)
-        {
-            OnDiscardEvent.Invoke(itm);                                     //丢弃
-        }
+        //public void OnItemDiscard(Item itm)
+        //{
+        //    OnDiscardEvent.Invoke(itm);                                     //丢弃
+        //}
 
-        public void OnItemDrop(Item draggingItem,Slot dstSlot)
-        {
-            OnDropEvent.Invoke(draggingItem, dstSlot);                      //放置到新槽位
-        }
+        //public void OnItemDrop(Item draggingItem,Slot dstSlot)
+        //{
+        //    OnDropEvent.Invoke(draggingItem, dstSlot);                      //放置到新槽位
+        //}
 
-        public static MouseManager GetManager()
-        {
-            return FindObjectOfType<MouseManager>();
-        }
+        //public static MouseManager GetManager()
+        //{
+        //    return FindObjectOfType<MouseManager>();
+        //}
     }
 }

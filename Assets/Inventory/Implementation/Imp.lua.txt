@@ -6,6 +6,7 @@ function start()
 	manager.OnDragBeginEvent:AddListener(BeginDragAction)
 	manager.OnDropEvent:AddListener(DropAction)
     manager.OnDiscardEvent:AddListener(DiscardAction)
+	manager.OnBagAddItemEvent:AddListener(BagAddItemFunction)
 end
 
 function update()
@@ -53,5 +54,15 @@ function DropAction(itm,slot)					--放置到新槽位回调函数
         end
     else
 		itm:returnBack()
+	end
+end
+
+function BagAddItemFunction(bag,itm)
+	available = bag:getAvailableSlots()
+	if(available.Count > 0)
+	then
+		itm:flyTo(available[0])
+	else
+		itm:destroyItem()
 	end
 end
